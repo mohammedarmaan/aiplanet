@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import Header from "./components/Header";
 import { Input } from "./components/ui/input";
 import { Send } from "lucide-react";
@@ -16,7 +16,7 @@ function App() {
     },
   ]);
 
-  const [inputMessage, setInputMessage] = useState('');
+  const [inputMessage, setInputMessage] = useState("");
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -28,7 +28,7 @@ function App() {
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (inputMessage.trim() === '') return;
+    if (inputMessage.trim() === "") return;
 
     const newUserMessage = {
       id: messages.length + 1,
@@ -39,15 +39,16 @@ function App() {
     const newAiMessage = {
       id: messages.length + 2,
       sender: "ai",
-      content: "Thank you for your message. As an AI assistant, I'm here to help answer your questions and provide information about AI Planet and our Large Language Model technology.",
+      content:
+        "Thank you for your message. As an AI assistant, I'm here to help answer your questions and provide information about AI Planet and our Large Language Model technology.",
     };
 
     setMessages([...messages, newUserMessage, newAiMessage]);
-    setInputMessage('');
+    setInputMessage("");
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSendMessage();
     }
   };
@@ -55,7 +56,7 @@ function App() {
   return (
     <div className="h-screen flex flex-col justify-between">
       <Header />
-      <main className="flex-grow flex flex-col p-4 px-20 overflow-auto">
+      <main className="flex-grow flex flex-col p-4 px-4 sm:px-6 lg:px-20 overflow-auto">
         <div className="flex-grow space-y-4">
           {messages.map((message) => (
             <div
@@ -65,7 +66,7 @@ function App() {
               }`}
             >
               <div
-                className={`flex items-start space-x-2 max-w-3xl ${
+                className={`flex items-start space-x-2 max-w-full ${
                   message.sender === "user"
                     ? "flex-row-reverse space-x-reverse"
                     : ""
@@ -73,15 +74,18 @@ function App() {
               >
                 <Avatar
                   className={
-                    message.sender === "user" ? "bg-blue-500 flex items-center justify-center" : "flex items-center justify-center bg-green-500"
+                    message.sender === "user"
+                      ? "bg-blue-500 flex items-center justify-center"
+                      : "flex items-center justify-center bg-green-500"
                   }
                 >
                   {message.sender === "user" ? "U" : "AI"}
                 </Avatar>
                 <div
-                  className={`p-3 rounded-lg ${
-                    message.sender === "user" ? "bg-blue-100" : "bg-green-100"
+                  className={`p-3 rounded-lg break-words max-w-[75%] ${
+                    message.sender === "user" ? "bg-blue-100" : ""
                   }`}
+                  style={{ overflowWrap: "break-word" }}
                 >
                   <p className="text-sm">{message.content}</p>
                 </div>
@@ -91,7 +95,7 @@ function App() {
           <div ref={messagesEndRef} />
         </div>
       </main>
-      <div className="px-20 py-4 border-t">
+      <div className="px-4 sm:px-6 lg:px-8 py-4 border-t">
         <div className="relative max-w-full mx-auto">
           <Input
             className="w-full pr-10 py-3"
