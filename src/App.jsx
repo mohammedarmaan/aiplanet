@@ -6,12 +6,17 @@ import { Send } from "lucide-react";
 import { Avatar } from "./components/ui/avatar";
 import { Button } from "./components/ui/button";
 import Chat from "./components/Chat";
+import loadgif  from "./assets/gb-notebook.gif"
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingChat, setisLoadingChat] = useState(false);
   const messagesEndRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [uploadDone, setUploadDone] = useState(false)
+
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -32,7 +37,7 @@ function App() {
 
     setMessages((prevMessages) => [...prevMessages, newUserMessage]);
     setInputMessage("");
-    setIsLoading(true);  // Start loading
+    setisLoadingChat(true); // Start loading
 
     try {
       const response = await axios.post("http://localhost:8000/search", {
@@ -57,7 +62,7 @@ function App() {
         },
       ]);
     } finally {
-      setIsLoading(false);  // End loading
+      setisLoadingChat(false); // End loading
     }
   };
 
@@ -69,13 +74,31 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col justify-between">
-      <Header />
-      <Chat messages={messages} messagesEndRef={messagesEndRef} />
-      {isLoading && (
+      <Header
+        setIsLoading={setIsLoading}
+        isLoading={isLoading}
+        setSelectedFile={setSelectedFile}
+        selectedFile={selectedFile}
+        setUploadDone={setUploadDone}
+      />
+
+      {uploadDone ? (
+        <Chat messages={messages} messagesEndRef={messagesEndRef} />
+      ) : (
+        <div className="w-full h-full flex justify-center items-center"> upload a file</div>
+      )}
+
+
+      {isLoadingChat && (
         <div className="px-4 sm:px-6 lg:px-20 py-2 text-gray-500 text-sm text-center">
           AI is typing...
         </div>
       )}
+      {isLoading &&(
+      <div className="px-4 h-screen w-screen flex justify-center items-center sm:px-6 lg:px-20 py-2 text-gray-500 text-sm text-center">
+      <img src={loadgif}  alt="image" />
+      </div>
+       )}
       <div className="px-4 sm:px-6 lg:px-20 py-4 border-t">
         <div className="relative max-w-full mx-auto">
           <Input

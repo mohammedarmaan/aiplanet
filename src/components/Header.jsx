@@ -7,10 +7,10 @@ import toast, { Toaster } from "react-hot-toast"
 import axios from "axios"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card" // Adjust this import based on your component structure
 
-export default function Header() {
+
+
+export default function Header( {isLoading, setIsLoading, setSelectedFile, selectedFile, setUploadDone} ) {
   const [isUploading, setIsUploading] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [selectedFile, setSelectedFile] = useState(null)
   const [pdfData, setPdfData] = useState(null)
   const [showPreview, setShowPreview] = useState(false) // Define showPreview state
   const fileInputRef = useRef(null)
@@ -81,12 +81,14 @@ export default function Header() {
       console.error("Error uploading file:", error)
     } finally {
       setIsLoading(false)
+      setUploadDone(true)
     }
   }
 
   const handleDelete = () => {
     localStorage.removeItem("file")
     localStorage.removeItem("fileName")
+    setUploadDone(false)
     setSelectedFile(null)
     setPdfData(null)
     toast.success("File deleted successfully", {
@@ -149,11 +151,12 @@ export default function Header() {
         </div>
       </div>
 
-      {isLoading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      {/* {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white  z-50">
+          <img src={loadgif} alt="image" />
           loading....
         </div>
-      )}
+      )} */}
 
       {/* Custom Modal */}
       {showPreview && (
