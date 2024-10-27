@@ -69,7 +69,7 @@ export default function Header( {isLoading, setIsLoading, setSelectedFile, selec
         }
       )
       console.log("Extracted Text:", response.data.extracted_text)
-      toast.success("Text extracted successfully", {
+      toast.success("File uploaded successfully", {
         duration: 3000,
         position: "top-center",
       })
@@ -100,7 +100,7 @@ export default function Header( {isLoading, setIsLoading, setSelectedFile, selec
   return (
     <>
       <div className="w-full shadow-sm px-4 sm:px-20 py-4 flex justify-between items-center">
-        <div className="text-lg font-semibold">AI Planet</div>
+        <div className="text-lg font-semibold satisfy-regula">AI Planet</div>
         <div className="flex items-center space-x-4">
           {selectedFile && (
             <HoverCard>

@@ -6,7 +6,7 @@ import { Send } from "lucide-react";
 import { Avatar } from "./components/ui/avatar";
 import { Button } from "./components/ui/button";
 import Chat from "./components/Chat";
-import loadgif  from "./assets/gb-notebook.gif"
+import loadgif from "./assets/gb-notebook.gif";
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -14,7 +14,7 @@ function App() {
   const [isLoadingChat, setisLoadingChat] = useState(false);
   const messagesEndRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [uploadDone, setUploadDone] = useState(false)
+  const [uploadDone, setUploadDone] = useState(false);
 
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -82,24 +82,21 @@ function App() {
         setUploadDone={setUploadDone}
       />
 
-      {uploadDone ? (
-        <Chat messages={messages} messagesEndRef={messagesEndRef} />
-      ) : (
-        <div className="w-full h-full flex justify-center items-center"> upload a file</div>
-      )}
-
+     
+        <Chat messages={messages} messagesEndRef={messagesEndRef} isLoading={isLoading}  />
+      
 
       {isLoadingChat && (
         <div className="px-4 sm:px-6 lg:px-20 py-2 text-gray-500 text-sm text-center">
           AI is typing...
         </div>
       )}
-      {isLoading &&(
-      <div className="px-4 h-screen w-screen flex justify-center items-center sm:px-6 lg:px-20 py-2 text-gray-500 text-sm text-center">
-      <img src={loadgif}  alt="image" />
-      </div>
-       )}
-      <div className="px-4 sm:px-6 lg:px-20 py-4 border-t">
+      {isLoading && (
+        <div className="px-4 h-screen w-screen flex justify-center items-center sm:px-6 lg:px-20 py-2 text-gray-500 text-sm text-center">
+          <img src={loadgif} alt="image" />
+        </div>
+      )}
+      <div className="px-4 sm:px-6 lg:px-60 py-4 ">
         <div className="relative max-w-full mx-auto">
           <Input
             className="w-full pr-10 py-3"

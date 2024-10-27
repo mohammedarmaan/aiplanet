@@ -5,11 +5,11 @@ import remarkGfm from 'remark-gfm';
 
 const Chat = ({ messages, messagesEndRef }) => {
   return (
-    <main className="flex-grow flex flex-col py-4 px-4 sm:px-6 lg:px-20 overflow-auto">
+    <main className="flex-grow flex flex-col py-4 px-4 sm:px-6 lg:px-60 overflow-auto">
       <div className="flex-grow space-y-4">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500">
-            Start messaging
+        Welcome!
           </div>
         ) : (
           messages.map((message) => (
