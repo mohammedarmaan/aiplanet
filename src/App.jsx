@@ -4,6 +4,7 @@ import { Input } from "./components/ui/input";
 import { Send } from "lucide-react";
 import { Avatar } from "./components/ui/avatar";
 import { Button } from "./components/ui/button";
+import Chat from "./components/Chat";
 
 function App() {
   const [messages, setMessages] = useState([
@@ -52,50 +53,13 @@ function App() {
       handleSendMessage();
     }
   };
+  
 
   return (
     <div className="h-screen flex flex-col justify-between">
       <Header />
-      <main className="flex-grow flex flex-col p-4 px-4 sm:px-6 lg:px-20 overflow-auto">
-        <div className="flex-grow space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${
-                message.sender === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`flex items-start space-x-2 max-w-full ${
-                  message.sender === "user"
-                    ? "flex-row-reverse space-x-reverse"
-                    : ""
-                }`}
-              >
-                <Avatar
-                  className={
-                    message.sender === "user"
-                      ? "bg-blue-500 flex items-center justify-center"
-                      : "flex items-center justify-center bg-green-500"
-                  }
-                >
-                  {message.sender === "user" ? "U" : "AI"}
-                </Avatar>
-                <div
-                  className={`p-3 rounded-lg break-words max-w-[75%] ${
-                    message.sender === "user" ? "bg-blue-100" : ""
-                  }`}
-                  style={{ overflowWrap: "break-word" }}
-                >
-                  <p className="text-sm">{message.content}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
-      </main>
-      <div className="px-4 sm:px-6 lg:px-8 py-4 border-t">
+      <Chat messages={messages} messagesEndRef= {messagesEndRef}/>
+      <div className="px-4 sm:px-6 lg:px-20 py-4 border-t">
         <div className="relative max-w-full mx-auto">
           <Input
             className="w-full pr-10 py-3"
