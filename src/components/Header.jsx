@@ -1,57 +1,85 @@
-import React, { useState, useRef, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Upload, FileText, X } from "lucide-react"
-import toast, { Toaster } from 'react-hot-toast'
+import React, { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Upload, FileText, X } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
 
 export default function Header() {
-  const [isUploading, setIsUploading] = useState(false)
-  const [selectedFile, setSelectedFile] = useState(null)
-  const [showPreview, setShowPreview] = useState(false)
-  const [pdfData, setPdfData] = useState(null)
-  const fileInputRef = useRef(null)
+  const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [pdfData, setPdfData] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
-    const storedFile = localStorage.getItem('file')
+    const storedFile = localStorage.getItem("file");
     if (storedFile) {
-      setPdfData(storedFile)
-      const fileName = localStorage.getItem('fileName')
+      setPdfData(storedFile);
+      const fileName = localStorage.getItem("fileName");
       if (fileName) {
-        setSelectedFile({ name: fileName })
+        setSelectedFile({ name: fileName });
       }
     }
-  }, [])
+  }, []);
 
   const handleUpload = () => {
-    fileInputRef.current?.click()
-  }
+    fileInputRef.current?.click();
+  };
 
   const handleFileChange = (event) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
-      if (file.type === 'application/pdf') {
-        setSelectedFile(file)
-        setIsUploading(true)
-        const reader = new FileReader()
+      if (file.type === "application/pdf") {
+        setSelectedFile(file);
+        setIsUploading(true);
+        const reader = new FileReader();
         reader.onloadend = () => {
-          const base64String = reader.result
-          localStorage.setItem('file', base64String)
-          localStorage.setItem('fileName', file.name)
-          setPdfData(base64String)
-          setIsUploading(false)
-          toast.success('PDF uploaded and saved to local storage', {
-            duration: 3000,
-            position: 'bottom-center',
-          })
-        }
-        reader.readAsDataURL(file)
+          const base64String = reader.result;
+          localStorage.setItem("file", base64String);
+          localStorage.setItem("fileName", file.name);
+          setPdfData(base64String);
+          setIsUploading(false);
+          uploadFileToAPI(file);
+        };
+        reader.readAsDataURL(file);
       } else {
-        toast.error('Please upload a PDF file', {
+        toast.error("Please upload a PDF file", {
           duration: 3000,
-          position: 'bottom-center',
-        })
+          position: "top-center",
+        });
       }
     }
-  }
+  };
+
+  const uploadFileToAPI = async (file) => {
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/extract-text",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      console.log("Extracted Text:", response.data.extracted_text);
+      toast.success("Text extracted successfully", {
+        duration: 3000,
+        position: "top-center",
+      });
+    } catch (error) {
+      toast.error("Failed to extract text from PDF", {
+        duration: 3000,
+        position: "top-center",
+      });
+      console.error("Error uploading file:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -59,7 +87,7 @@ export default function Header() {
         <div className="text-lg font-semibold">AI Planet</div>
         <div className="flex items-center space-x-4">
           {selectedFile && (
-            <div 
+            <div
               className="flex items-center text-sm text-gray-600 cursor-pointer"
               onClick={() => setShowPreview(true)}
             >
@@ -74,16 +102,28 @@ export default function Header() {
             ref={fileInputRef}
             onChange={handleFileChange}
           />
-          <Button 
-            variant="outline" 
-            onClick={handleUpload} 
-            disabled={isUploading}
+          <Button
+            variant="outline"
+            onClick={handleUpload}
+            disabled={isUploading || isLoading}
           >
-            <Upload className="w-4 h-4 mr-2" />
-            {isUploading ? "Uploading..." : "Upload PDF"}
+            {isUploading || isLoading ? (
+              "Processing..."
+            ) : (
+              <>
+                <Upload className="w-4 h-4 mr-2" />
+                Upload PDF
+              </>
+            )}
           </Button>
         </div>
       </div>
+
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          loading....
+        </div>
+      )}
 
       {/* Custom Modal */}
       {showPreview && (
@@ -108,8 +148,8 @@ export default function Header() {
           </div>
         </div>
       )}
-      
+
       <Toaster />
     </>
-  )
+  );
 }
