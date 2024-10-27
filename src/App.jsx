@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import Header from "./components/Header";
 import { Input } from "./components/ui/input";
 import { Send } from "lucide-react";
@@ -7,11 +8,9 @@ import { Button } from "./components/ui/button";
 import Chat from "./components/Chat";
 
 function App() {
-  const [messages, setMessages] = useState([
-  
-  ]);
-
+  const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -22,7 +21,7 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputMessage.trim() === "") return;
 
     const newUserMessage = {
@@ -31,15 +30,35 @@ function App() {
       content: inputMessage.trim(),
     };
 
-    const newAiMessage = {
-      id: messages.length + 2,
-      sender: "ai",
-      content:
-        "Thank you for your message. As an AI assistant, I'm here to help answer your questions and provide information about AI Planet and our Large Language Model technology.",
-    };
-
-    setMessages([...messages, newUserMessage, newAiMessage]);
+    setMessages((prevMessages) => [...prevMessages, newUserMessage]);
     setInputMessage("");
+    setIsLoading(true);  // Start loading
+
+    try {
+      const response = await axios.post("http://localhost:8000/search", {
+        prompt: inputMessage.trim(),
+      });
+
+      const newAiMessage = {
+        id: messages.length + 2,
+        sender: "ai",
+        content: response.data.result,
+      };
+
+      setMessages((prevMessages) => [...prevMessages, newAiMessage]);
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: messages.length + 2,
+          sender: "ai",
+          content: "Sorry, there was an error processing your request.",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);  // End loading
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -47,12 +66,16 @@ function App() {
       handleSendMessage();
     }
   };
-  
 
   return (
     <div className="h-screen flex flex-col justify-between">
       <Header />
-      <Chat messages={messages} messagesEndRef= {messagesEndRef}/>
+      <Chat messages={messages} messagesEndRef={messagesEndRef} />
+      {isLoading && (
+        <div className="px-4 sm:px-6 lg:px-20 py-2 text-gray-500 text-sm text-center">
+          AI is typing...
+        </div>
+      )}
       <div className="px-4 sm:px-6 lg:px-20 py-4 border-t">
         <div className="relative max-w-full mx-auto">
           <Input

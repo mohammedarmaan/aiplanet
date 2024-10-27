@@ -1,6 +1,7 @@
 import React from 'react';
-// import { useState, useRef, useEffect } from "react";
 import { Avatar } from "../components/ui/avatar";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const Chat = ({ messages, messagesEndRef }) => {
   return (
@@ -40,7 +41,16 @@ const Chat = ({ messages, messagesEndRef }) => {
                   }`}
                   style={{ overflowWrap: "break-word" }}
                 >
-                  <p className="text-sm">{message.content}</p>
+                  {message.sender === "ai" ? (
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      className="text-sm"
+                    >
+                      {message.content}
+                    </ReactMarkdown>
+                  ) : (
+                    <p className="text-sm">{message.content}</p>
+                  )}
                 </div>
               </div>
             </div>
