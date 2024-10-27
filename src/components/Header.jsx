@@ -1,61 +1,64 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Upload, FileText, X } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
-import axios from "axios";
+'use client'
+
+import React, { useState, useRef, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Upload, FileText, X, Trash2 } from "lucide-react"
+import toast, { Toaster } from "react-hot-toast"
+import axios from "axios"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card" // Adjust this import based on your component structure
 
 export default function Header() {
-  const [isUploading, setIsUploading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [showPreview, setShowPreview] = useState(false);
-  const [pdfData, setPdfData] = useState(null);
-  const fileInputRef = useRef(null);
+  const [isUploading, setIsUploading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [pdfData, setPdfData] = useState(null)
+  const [showPreview, setShowPreview] = useState(false) // Define showPreview state
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
-    const storedFile = localStorage.getItem("file");
+    const storedFile = localStorage.getItem("file")
     if (storedFile) {
-      setPdfData(storedFile);
-      const fileName = localStorage.getItem("fileName");
+      setPdfData(storedFile)
+      const fileName = localStorage.getItem("fileName")
       if (fileName) {
-        setSelectedFile({ name: fileName });
+        setSelectedFile({ name: fileName })
       }
     }
-  }, []);
+  }, [])
 
   const handleUpload = () => {
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
 
   const handleFileChange = (event) => {
-    const file = event.target.files?.[0];
+    const file = event.target.files?.[0]
     if (file) {
       if (file.type === "application/pdf") {
-        setSelectedFile(file);
-        setIsUploading(true);
-        const reader = new FileReader();
+        setSelectedFile(file)
+        setIsUploading(true)
+        const reader = new FileReader()
         reader.onloadend = () => {
-          const base64String = reader.result;
-          localStorage.setItem("file", base64String);
-          localStorage.setItem("fileName", file.name);
-          setPdfData(base64String);
-          setIsUploading(false);
-          uploadFileToAPI(file);
-        };
-        reader.readAsDataURL(file);
+          const base64String = reader.result
+          localStorage.setItem("file", base64String)
+          localStorage.setItem("fileName", file.name)
+          setPdfData(base64String)
+          setIsUploading(false)
+          uploadFileToAPI(file)
+        }
+        reader.readAsDataURL(file)
       } else {
         toast.error("Please upload a PDF file", {
           duration: 3000,
           position: "top-center",
-        });
+        })
       }
     }
-  };
+  }
 
   const uploadFileToAPI = async (file) => {
-    setIsLoading(true);
-    const formData = new FormData();
-    formData.append("file", file);
+    setIsLoading(true)
+    const formData = new FormData()
+    formData.append("file", file)
 
     try {
       const response = await axios.post(
@@ -64,22 +67,33 @@ export default function Header() {
         {
           headers: { "Content-Type": "multipart/form-data" },
         }
-      );
-      console.log("Extracted Text:", response.data.extracted_text);
+      )
+      console.log("Extracted Text:", response.data.extracted_text)
       toast.success("Text extracted successfully", {
         duration: 3000,
         position: "top-center",
-      });
+      })
     } catch (error) {
       toast.error("Failed to extract text from PDF", {
         duration: 3000,
         position: "top-center",
-      });
-      console.error("Error uploading file:", error);
+      })
+      console.error("Error uploading file:", error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
+
+  const handleDelete = () => {
+    localStorage.removeItem("file")
+    localStorage.removeItem("fileName")
+    setSelectedFile(null)
+    setPdfData(null)
+    toast.success("File deleted successfully", {
+      duration: 3000,
+      position: "top-center",
+    })
+  }
 
   return (
     <>
@@ -87,13 +101,29 @@ export default function Header() {
         <div className="text-lg font-semibold">AI Planet</div>
         <div className="flex items-center space-x-4">
           {selectedFile && (
-            <div
-              className="flex items-center text-sm text-gray-600 cursor-pointer"
-              onClick={() => setShowPreview(true)}
-            >
-              <FileText className="w-4 h-4 mr-2 text-green-500" />
-              <span>{selectedFile.name}</span>
-            </div>
+            <HoverCard>
+              <HoverCardTrigger className="relative flex items-center text-sm text-gray-600 cursor-pointer">
+                <FileText className="w-4 h-4 mr-2 text-green-500" />
+                <span>{selectedFile.name}</span>
+              </HoverCardTrigger>
+              <HoverCardContent className="flex flex-col">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPreview(true)} // Set showPreview to true
+                  className="mb-1"
+                >
+                  Preview
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleDelete}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete
+                </Button>
+              </HoverCardContent>
+            </HoverCard>
           )}
           <input
             type="file"
@@ -151,5 +181,5 @@ export default function Header() {
 
       <Toaster />
     </>
-  );
+  )
 }
