@@ -8,13 +8,7 @@ import Chat from "./components/Chat";
 
 function App() {
   const [messages, setMessages] = useState([
-    { id: 1, sender: "user", content: "explain like im 5" },
-    {
-      id: 2,
-      sender: "ai",
-      content:
-        "Our own Large Language Model (LLM) is a type of AI that can learn from data. We have trained it on 7 billion parameters which makes it better than other LLMs. We are featured on aiplanet.com and work with leading enterprises to help them use AI securely and privately. We have a Generative AI Stack which helps reduce the hallucinations in LLMs and allows enterprises to use AI in their applications.",
-    },
+  
   ]);
 
   const [inputMessage, setInputMessage] = useState("");
